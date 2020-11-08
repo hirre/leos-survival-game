@@ -33,31 +33,46 @@ public class Main
         LeoCanvas lc = new LeoCanvas();
         f.getContentPane().add(lc);
 
-        f.addKeyListener(new KeyListener() {
+        f.addKeyListener(new KeyListener() 
+        {
             @Override
-            public void keyTyped(KeyEvent e) {
+            public void keyTyped(KeyEvent e) 
+            {
             }
 
             @Override
-            public void keyReleased(KeyEvent e) {
+            public void keyReleased(KeyEvent e) 
+            {
             }
 
             @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_UP) {
+            public void keyPressed(KeyEvent e) 
+            {
+                if (e.getKeyCode() == KeyEvent.VK_UP) 
+                {
                     lc.setY(-lc.getSpeed());
-                } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                } 
+                else if (e.getKeyCode() == KeyEvent.VK_DOWN) 
+                {
                     lc.setY(lc.getSpeed());
-                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                } 
+                else if (e.getKeyCode() == KeyEvent.VK_RIGHT) 
+                {
                     lc.setX(lc.getSpeed());
-                } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                } 
+                else if (e.getKeyCode() == KeyEvent.VK_LEFT) 
+                {
                     lc.setX(-lc.getSpeed());
-                } else if (e.getKeyCode() == KeyEvent.VK_A) {
+                } 
+                else if (e.getKeyCode() == KeyEvent.VK_A) 
+                {
                     int speed = lc.getSpeed();
 
                     if (speed + 1 <= 10)
                         lc.setSpeed(speed + 1);
-                } else if (e.getKeyCode() == KeyEvent.VK_S) {
+                } 
+                else if (e.getKeyCode() == KeyEvent.VK_S) 
+                {
                     int speed = lc.getSpeed();
 
                     if (speed - 1 > 0)
