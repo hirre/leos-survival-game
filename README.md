@@ -1,2 +1,7 @@
-# leos-survival-game
-Leo's Survival Game
+# Leo's Survival Game
+
+
+**Usage:** compile *Main.java* and run it. 
+
+Have fun!
+
