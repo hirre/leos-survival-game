@@ -1,3 +1,6 @@
+/** 
+ *  This game was created by Hirad & Leo Asadi 2020-11-09.
+ */
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -11,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.Timer;
 
+/**
+ *  Try to stay away from the moving objects!
+ */
 public class Main 
 {    
     private static int frameWidth = 700;
