@@ -75,20 +75,6 @@ public class Main
         }
     }
 
-    public static class CircleObject
-    {
-        public double DistanceToObject;
-        public int YdirectionStep;
-        public int XdirectionStep;                        
-        public int X;
-        public int Y;
-        public int Width;
-        public int Height;
-        public int MiddleX;
-        public int MiddleY;
-        public Color Color;
-    }
-
     public static class LeoCanvas extends JComponent 
     {
         private static final long serialVersionUID = 1L;
@@ -298,6 +284,20 @@ public class Main
             timer.stop();            
             init();            
         }
+    }
+
+    public static class CircleObject
+    {
+        public double DistanceToObject;
+        public int YdirectionStep;
+        public int XdirectionStep;                        
+        public int X;
+        public int Y;
+        public int Width;
+        public int Height;
+        public int MiddleX;
+        public int MiddleY;
+        public Color Color;
     }
 }
 
