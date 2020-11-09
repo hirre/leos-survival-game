@@ -12,9 +12,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+
 import javax.swing.Timer;
 
 /**
@@ -24,6 +27,7 @@ public class Main
 {    
     private static int frameWidth = 700;
     private static int frameHeight = 650;
+    private static final int directionChangeDelayMs = 100;
 
     public static void main(String[] args) throws InterruptedException 
     {
@@ -187,22 +191,44 @@ public class Main
             synchronized (circleObjects) 
             {
                 circleObjects.forEach((c) -> 
-                {
+                {                    
+                    Date now = Calendar.getInstance().getTime();                    
+                    
+                    long diff = now.getTime() - c.LastEdited.getTime();                 
+                    Date lastEdited =  Calendar.getInstance().getTime();
+                    boolean[] changed = new boolean[1];
+                    changed[0] = false;
+
+                    if (diff > directionChangeDelayMs)
+                        changed[0] = true;
+
                     // Detect hit with frame floor and ceiling and flip direction
-                    if (c.Y + 1 > (frameHeight - c.Height) || c.Y - 1 <= 0)            
+                    if (changed[0] && (c.Y + 1 > (frameHeight - c.Height) || c.Y - 1 <= 0))            
+                    {
                         c.YdirectionStep *= -1;
+                        c.LastEdited = lastEdited;
+                    }
 
                     // Detect hit with frame walls and flip direction
-                    if (c.X + 1 > (frameWidth - c.Width) || c.X - 1 <= 0)
+                    if (changed[0] && (c.X + 1 > (frameWidth - c.Width) || c.X - 1 <= 0))
+                    {
                         c.XdirectionStep *= -1;
+                        c.LastEdited = lastEdited;
+                    }
 
                     // Detect hit with rectangle walls and flip direction
-                    if (c.X + 1 > (rectangleX - c.Width) && c.Y <= (rectangleY + rectangleHeight) && c.Y >= rectangleY)
+                    if (changed[0] && (c.X + 1 > (rectangleX - c.Width) && c.Y <= (rectangleY + rectangleHeight) && c.Y >= rectangleY))
+                    {
                         c.XdirectionStep *= -1;
+                        c.LastEdited = lastEdited;
+                    }
 
                     // Detect hit with rectangle floor and ceiling and flip direction
-                    if (c.Y + 1 > (rectangleY - c.Height) && c.X <= (rectangleX + rectangleWidth) && c.X >= rectangleX)
+                    if (changed[0] && (c.Y + 1 > (rectangleY - c.Height) && c.X <= (rectangleX + rectangleWidth) && c.X >= rectangleX))
+                    {
                         c.YdirectionStep *= -1;
+                        c.LastEdited = lastEdited;
+                    }
 
                     // Detect hit with other circles and flip direction
                     circleObjects.forEach((v) -> 
@@ -210,15 +236,19 @@ public class Main
                         if (c != v)
                         {                            
                             double dist = Math.sqrt(Math.pow(c.MiddleX - v.MiddleX, 2) + Math.pow(c.MiddleY - v.MiddleY, 2));
+                            long diff2 = now.getTime() - v.LastEdited.getTime();
+                            boolean otherChanged = (diff2 > directionChangeDelayMs); 
 
-                            if (dist <= c.Height)
+                            if (otherChanged && changed[0] && (dist <= c.Height))
                             {
                                 c.YdirectionStep *= -1;
+                                c.LastEdited = lastEdited;
                             }
 
-                            if (dist <= c.Width)
+                            if (otherChanged && changed[0] && (dist <= c.Width))
                             {
                                 c.XdirectionStep *= -1;
+                                c.LastEdited = lastEdited;
                             }
                         }
                     });
@@ -376,6 +406,7 @@ public class Main
         public int MiddleX;
         public int MiddleY;
         public Color Color;
+        public Date LastEdited = Calendar.getInstance().getTime();
     }
 }
 
