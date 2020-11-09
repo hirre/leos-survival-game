@@ -181,12 +181,41 @@ public class Main
             {
                 circleObjects.forEach((c) -> 
                 {
+                    // Detect hit with frame floor and ceiling and flip direction
                     if (c.Y + 1 > (frameHeight - c.Height) || c.Y - 1 <= 0)            
                         c.YdirectionStep *= -1;
 
+                    // Detect hit with frame walls and flip direction
                     if (c.X + 1 > (frameWidth - c.Width) || c.X - 1 <= 0)
                         c.XdirectionStep *= -1;
-            
+
+                    // Detect hit with rectangle walls and flip direction
+                    if (c.X + 1 > (rectangleX - c.Width) && c.Y <= (rectangleY + rectangleHeight) && c.Y >= rectangleY)
+                        c.XdirectionStep *= -1;
+
+                    // Detect hit with rectangle floor and ceiling and flip direction
+                    if (c.Y + 1 > (rectangleY - c.Height) && c.X <= (rectangleX + rectangleWidth) && c.X >= rectangleX)
+                        c.YdirectionStep *= -1;
+
+                    // Detect hit with other circles and flip direction
+                    circleObjects.forEach((v) -> 
+                    {
+                        if (c != v)
+                        {                            
+                            double dist = Math.sqrt(Math.pow(c.MiddleX - v.MiddleX, 2) + Math.pow(c.MiddleY - v.MiddleY, 2));
+
+                            if (dist <= c.Height)
+                            {
+                                c.YdirectionStep *= -1;
+                            }
+
+                            if (dist <= c.Width)
+                            {
+                                c.XdirectionStep *= -1;
+                            }
+                        }
+                    });
+
                     c.Y += c.YdirectionStep;
                     c.X += c.XdirectionStep;
                 });         
