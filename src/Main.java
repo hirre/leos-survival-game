@@ -75,7 +75,7 @@ public class Main
                 {
                     int speed = lc.getSpeed();
 
-                    if (speed + 1 <= 10)
+                    if (speed + 1 <= 20)
                         lc.setSpeed(speed + 1);
                 } 
                 else if (e.getKeyCode() == KeyEvent.VK_S) 
@@ -135,8 +135,8 @@ public class Main
             {
                 survivalTimeSeconds++;
 
-                // Add a new circle every 10 seconds
-                if (survivalTimeSeconds % 10 == 0)
+                // Add a new circle every 20 seconds
+                if (survivalTimeSeconds % 20 == 0)
                     circleObjects.add(createCircleObject());
             }            
         });                
@@ -362,7 +362,7 @@ public class Main
 
         private CircleObject createCircleObject()
         {
-            int extraSize = rnd.nextInt(30);
+            int extraSize = rnd.nextInt(10);
             CircleObject c = new CircleObject();
             c.X = rnd.nextInt(500);
             c.Y = rnd.nextInt(500);            
@@ -376,8 +376,8 @@ public class Main
             if (rnd.nextBoolean())
                 c.YdirectionStep *= -1;
 
-            c.Width = 25 + extraSize;
-            c.Height = 25 + extraSize;
+            c.Width = 10 + extraSize;
+            c.Height = 10 + extraSize;
             c.MiddleX = c.X + c.Width/2;
             c.MiddleY = c.Y + c.Height/2;
             c.DistanceToObject = 0;
