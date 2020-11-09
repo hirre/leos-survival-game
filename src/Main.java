@@ -1,3 +1,4 @@
+
 /** 
  *  This game was created by Hirad & Leo Asadi 2020-11-09.
  */
@@ -11,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import javax.swing.Timer;
 
@@ -100,7 +103,7 @@ public class Main
     {
         private static final long serialVersionUID = 1L;
         
-        private ArrayList<CircleObject> circleObjects = new ArrayList<CircleObject>();
+        private List<CircleObject> circleObjects = Collections.synchronizedList(new ArrayList<CircleObject>());
         private double distanceToRectangle;
         private int xPlayer;
         private int yPlayer;
@@ -174,17 +177,20 @@ public class Main
 
         public void moveCircleObjects()
         {
-            for (CircleObject c : circleObjects) 
+            synchronized (circleObjects) 
             {
-                if (c.Y + 1 > frameHeight || c.Y - 1 <= 0)            
-                    c.YdirectionStep *= -1;
+                circleObjects.forEach((c) -> 
+                {
+                    if (c.Y + 1 > (frameHeight - c.Height) || c.Y - 1 <= 0)            
+                        c.YdirectionStep *= -1;
 
-                if (c.X + 1 > frameWidth || c.X - 1 <= 0)
-                    c.XdirectionStep *= -1;
+                    if (c.X + 1 > (frameWidth - c.Width) || c.X - 1 <= 0)
+                        c.XdirectionStep *= -1;
             
-                c.Y += c.YdirectionStep;
-                c.X += c.XdirectionStep;
-            }            
+                    c.Y += c.YdirectionStep;
+                    c.X += c.XdirectionStep;
+                });         
+            }
         }
 
         public void detectCollisionWithRectangle()
@@ -205,19 +211,27 @@ public class Main
         public void detectCollisionWithCircles()
         {
             xPlayerMiddle = xPlayer + playerWidth/2;
-            yPlayerMiddle = yPlayer + playerHeight/2;
+            yPlayerMiddle = yPlayer + playerHeight/2;            
+            final boolean[] collision = new boolean[1];
 
-            for (CircleObject c : circleObjects) 
-            {
-                c.MiddleX = c.X + c.Width/2;
-                c.MiddleY = c.Y + c.Height/2;
-                c.DistanceToObject = Math.sqrt(Math.pow(xPlayerMiddle-c.MiddleX, 2) + Math.pow(yPlayerMiddle-c.MiddleY, 2));
-
-                if (c.DistanceToObject <= playerWidth * 1.2)
+            synchronized (circleObjects) 
+            {                
+                circleObjects.forEach((c) -> 
                 {
-                    Collision();
-                }
-            }                                
+                    c.MiddleX = c.X + c.Width/2;
+                    c.MiddleY = c.Y + c.Height/2;
+                    c.DistanceToObject = Math.sqrt(Math.pow(xPlayerMiddle-c.MiddleX, 2) + Math.pow(yPlayerMiddle-c.MiddleY, 2));
+
+                    if (c.DistanceToObject <= playerWidth * 1.2)
+                    {
+                        collision[0] = true;
+                        return;
+                    }
+                });                                
+            }
+            
+            if (collision[0])
+                Collision();
         }                
 
         public void paint(Graphics g) 
@@ -235,18 +249,21 @@ public class Main
             g.setColor(Color.RED);
             g.drawRect(rectangleX, rectangleY, rectangleWidth, rectangleHeight);            
             g.fillRect(rectangleX, rectangleY, rectangleWidth, rectangleHeight);
-             
-            for (CircleObject c : circleObjects) 
+
+            synchronized (circleObjects) 
             {
-                g.setColor(c.Color); 
-                g.drawOval(c.X, c.Y, c.Width, c.Height);
-                g.fillOval(c.X, c.Y, c.Width, c.Height);
-            }
+                circleObjects.forEach((c) -> 
+                {
+                    g.setColor(c.Color); 
+                    g.drawOval(c.X, c.Y, c.Width, c.Height);
+                    g.fillOval(c.X, c.Y, c.Width, c.Height);
+                });         
+            }             
         }
 
         private void init()
         {
-            circleObjects = new ArrayList<CircleObject>();
+            circleObjects.clear();
             survivalTimeSeconds = 0;
             distanceToRectangle = 0;
             xPlayer = rnd.nextInt(500);
