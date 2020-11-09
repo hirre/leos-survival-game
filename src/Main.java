@@ -89,12 +89,13 @@ public class Main
 
         // Game loop
         while (true) 
-        {
+        {            
             lc.moveRectangleObject();
             lc.moveCircleObjects();
             f.repaint();
             lc.detectCollisionWithRectangle();
             lc.detectCollisionWithCircles();
+            lc.calculateScore();
             Thread.sleep(10);
         }
     }
@@ -104,6 +105,7 @@ public class Main
         private static final long serialVersionUID = 1L;
         
         private List<CircleObject> circleObjects = Collections.synchronizedList(new ArrayList<CircleObject>());
+        private Random rnd = new Random();
         private double distanceToRectangle;
         private int xPlayer;
         private int yPlayer;
@@ -120,7 +122,7 @@ public class Main
         private int rectangleYMiddle;
         private int rectangleDirectionStep;        
         private int survivalTimeSeconds;
-        private Random rnd = new Random();
+        private int score;        
 
         private Timer timer = new Timer(1000, new ActionListener() 
         {
@@ -139,6 +141,11 @@ public class Main
         {
             setDoubleBuffered(true);
             init();
+        }
+
+        public void calculateScore()
+        {
+            score += Math.max(circleObjects.size() * survivalTimeSeconds / speed,  1);
         }
         
         public void setX(int i)
@@ -265,10 +272,13 @@ public class Main
 
         public void paint(Graphics g) 
         {
+            int nrOfCircleObjects = circleObjects.size();
+
             g.setColor(Color.BLACK);
             g.drawString("Speed (A = faster, S = slower): " + speed, 5, 12);
-            g.drawString("Number of balls: " + circleObjects.size(), 300, 12);
-            g.drawString("Survival time (s): " + survivalTimeSeconds, 550, 12);
+            g.drawString("Number of balls: " + nrOfCircleObjects, 230, 12);
+            g.drawString("Survival time (s): " + survivalTimeSeconds, 370, 12);
+            g.drawString("SCORE: " + score, 525, 12);
             g.drawLine(0, 15, frameWidth, 15);     
 
             g.setColor(Color.BLUE);
@@ -306,7 +316,8 @@ public class Main
             rectangleY = rnd.nextInt(500);
             rectangleWidth = 20;
             rectangleHeight = 100;
-            rectangleDirectionStep = 10;           
+            rectangleDirectionStep = 10;
+            score = 0;           
 
             rectangleXMiddle = rectangleX + rectangleWidth/2;
             rectangleYMiddle = rectangleY + rectangleHeight/2;    
@@ -347,7 +358,7 @@ public class Main
 
         private void Collision()
         {            
-            JOptionPane.showMessageDialog(this, "YOU LOST! YOU MANAGED TO SURVIVE FOR " + survivalTimeSeconds + " SECONDS.");
+            JOptionPane.showMessageDialog(this, "You lost! You managed to survive for " + survivalTimeSeconds + " seconds. \n\nSCORE: " + score);
             timer.stop();            
             init();            
         }
