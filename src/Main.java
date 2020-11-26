@@ -137,7 +137,12 @@ public class Main
 
                 // Add a new circle every 20 seconds
                 if (survivalTimeSeconds % 20 == 0)
-                    circleObjects.add(createCircleObject());
+                {
+                    synchronized(circleObjects)
+                    {
+                        circleObjects.add(createCircleObject());
+                    }                    
+                }
             }            
         });                
 
@@ -149,7 +154,10 @@ public class Main
 
         public void calculateScore()
         {
-            score += Math.max(circleObjects.size() * survivalTimeSeconds / speed,  1);
+            synchronized(circleObjects)
+            {
+                score += Math.max(circleObjects.size() * survivalTimeSeconds / speed,  1);
+            }            
         }
         
         public void setX(int i)
@@ -302,7 +310,12 @@ public class Main
 
         public void paint(Graphics g) 
         {
-            int nrOfCircleObjects = circleObjects.size();
+            int nrOfCircleObjects;
+
+            synchronized(circleObjects)
+            {
+                nrOfCircleObjects = circleObjects.size();
+            }
 
             g.setColor(Color.BLACK);
             g.drawString("Speed (A = faster, S = slower): " + speed, 5, 12);
@@ -332,7 +345,11 @@ public class Main
 
         private void init()
         {
-            circleObjects.clear();
+            synchronized(circleObjects)
+            {
+                circleObjects.clear();
+            }
+            
             survivalTimeSeconds = 0;
             distanceToRectangle = 0;
             xPlayer = rnd.nextInt(500);
@@ -352,11 +369,14 @@ public class Main
             rectangleXMiddle = rectangleX + rectangleWidth/2;
             rectangleYMiddle = rectangleY + rectangleHeight/2;    
 
-            for (int i = 0; i < rnd.nextInt(2) + 1; i++)
-            {                
-                circleObjects.add(createCircleObject());
+            synchronized(circleObjects)
+            {
+                for (int i = 0; i < rnd.nextInt(2) + 1; i++)
+                {                
+                    circleObjects.add(createCircleObject());
+                }
             }
-
+            
             timer.start();
         }
 
