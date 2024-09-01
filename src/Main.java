@@ -25,9 +25,9 @@ import javax.swing.Timer;
  */
 public class Main 
 {    
-    private static int frameWidth = 700;
-    private static int frameHeight = 650;
-    private static final int directionChangeDelayMs = 100;
+    private static final int FRAME_WIDTH = 700;
+    private static final int FRAME_HEIGHT = 650;
+    private static final int DIRECTION_CHANGE_DELAY_MS = 100;
 
     public static void main(String[] args) throws InterruptedException 
     {
@@ -35,7 +35,7 @@ public class Main
         f.setTitle("Leo's Survival Game");
         f.getContentPane().setBackground(Color.WHITE);
         f.setResizable(false);
-        f.setSize(frameWidth, frameHeight);
+        f.setSize(FRAME_WIDTH, FRAME_HEIGHT);
 
         LeoCanvas lc = new LeoCanvas();
         f.getContentPane().add(lc);
@@ -55,35 +55,23 @@ public class Main
             @Override
             public void keyPressed(KeyEvent e) 
             {
-                if (e.getKeyCode() == KeyEvent.VK_UP) 
-                {
-                    lc.setY(-lc.getSpeed());
-                } 
-                else if (e.getKeyCode() == KeyEvent.VK_DOWN) 
-                {
-                    lc.setY(lc.getSpeed());
-                } 
-                else if (e.getKeyCode() == KeyEvent.VK_RIGHT) 
-                {
-                    lc.setX(lc.getSpeed());
-                } 
-                else if (e.getKeyCode() == KeyEvent.VK_LEFT) 
-                {
-                    lc.setX(-lc.getSpeed());
-                } 
-                else if (e.getKeyCode() == KeyEvent.VK_A) 
-                {
-                    int speed = lc.getSpeed();
-
-                    if (speed + 1 <= 20)
-                        lc.setSpeed(speed + 1);
-                } 
-                else if (e.getKeyCode() == KeyEvent.VK_S) 
-                {
-                    int speed = lc.getSpeed();
-
-                    if (speed - 1 > 0)
-                        lc.setSpeed(speed - 1);
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_UP -> lc.setY(-lc.getSpeed());
+                    case KeyEvent.VK_DOWN -> lc.setY(lc.getSpeed());
+                    case KeyEvent.VK_RIGHT -> lc.setX(lc.getSpeed());
+                    case KeyEvent.VK_LEFT -> lc.setX(-lc.getSpeed());
+                    case KeyEvent.VK_A ->                         {
+                            int speed = lc.getSpeed();
+                            if (speed + 1 <= 20)
+                                lc.setSpeed(speed + 1);
+                        }
+                    case KeyEvent.VK_S ->                         {
+                            int speed = lc.getSpeed();
+                            if (speed - 1 > 0)
+                                lc.setSpeed(speed - 1);
+                        }
+                    default -> {
+                    }
                 }
             }
         });
@@ -92,24 +80,24 @@ public class Main
         f.setVisible(true);
 
         // Game loop
-        while (true) 
-        {            
+        Timer gameLoopTimer = new Timer(10, (ActionEvent e) -> {
             lc.moveRectangleObject();
             lc.moveCircleObjects();
             f.repaint();
             lc.detectCollisionWithRectangle();
             lc.detectCollisionWithCircles();
             lc.calculateScore();
-            Thread.sleep(10);
-        }
+        });
+        
+        gameLoopTimer.start();
     }
 
     public static class LeoCanvas extends JComponent 
     {
         private static final long serialVersionUID = 1L;
         
-        private List<CircleObject> circleObjects = Collections.synchronizedList(new ArrayList<CircleObject>());
-        private Random rnd = new Random();
+        private final List<CircleObject> circleObjects = Collections.synchronizedList(new ArrayList<>());
+        private final Random rnd = new Random();
         private double distanceToRectangle;
         private int xPlayer;
         private int yPlayer;
@@ -128,7 +116,7 @@ public class Main
         private int survivalTimeSeconds;
         private int score;        
 
-        private Timer timer = new Timer(1000, new ActionListener() 
+        private final Timer timer = new Timer(1000, new ActionListener() 
         {
             @Override
             public void actionPerformed(ActionEvent e) 
@@ -162,7 +150,7 @@ public class Main
         
         public void setX(int i)
         {
-            if (i >= 0 && (xPlayer + playerWidth + i) < frameWidth - 15)            
+            if (i >= 0 && (xPlayer + playerWidth + i) < FRAME_WIDTH - 15)            
                 xPlayer += i;
             else if (i < 0 && (xPlayer + i) > 0)
                 xPlayer += i;
@@ -170,7 +158,7 @@ public class Main
 
         public void setY(int i)
         {
-            if (i >= 0 && (yPlayer + playerHeight * 2.5 + i) < frameHeight)            
+            if (i >= 0 && (yPlayer + playerHeight * 2.5 + i) < FRAME_HEIGHT)            
                 yPlayer += i;
             else if (i < 0 && (yPlayer + i) > 12)
                 yPlayer += i;
@@ -188,7 +176,7 @@ public class Main
 
         public void moveRectangleObject()
         {
-            if (rectangleY + 1 > frameHeight || rectangleY - 1 <= 0)
+            if (rectangleY + 1 > FRAME_HEIGHT || rectangleY - 1 <= 0)
                 rectangleDirectionStep *= -1;
             
             rectangleY += rectangleDirectionStep;
@@ -207,18 +195,18 @@ public class Main
                     boolean[] changed = new boolean[1];
                     changed[0] = false;
 
-                    if (diff > directionChangeDelayMs)
+                    if (diff > DIRECTION_CHANGE_DELAY_MS)
                         changed[0] = true;
 
                     // Detect hit with frame floor and ceiling and flip direction
-                    if (changed[0] && (c.Y + 1 > (frameHeight - c.Height) || c.Y - 1 <= 0))            
+                    if (changed[0] && (c.Y + 1 > (FRAME_HEIGHT - c.Height) || c.Y - 1 <= 0))            
                     {
                         c.YdirectionStep *= -1;
                         c.LastEdited = lastEdited;
                     }
 
                     // Detect hit with frame walls and flip direction
-                    if (changed[0] && (c.X + 1 > (frameWidth - c.Width) || c.X - 1 <= 0))
+                    if (changed[0] && (c.X + 1 > (FRAME_HEIGHT - c.Width) || c.X - 1 <= 0))
                     {
                         c.XdirectionStep *= -1;
                         c.LastEdited = lastEdited;
@@ -245,7 +233,7 @@ public class Main
                         {                            
                             double dist = Math.sqrt(Math.pow(c.MiddleX - v.MiddleX, 2) + Math.pow(c.MiddleY - v.MiddleY, 2));
                             long diff2 = now.getTime() - v.LastEdited.getTime();
-                            boolean otherChanged = (diff2 > directionChangeDelayMs); 
+                            boolean otherChanged = (diff2 > DIRECTION_CHANGE_DELAY_MS); 
 
                             if (otherChanged && changed[0] && (dist <= c.Height))
                             {
@@ -299,7 +287,6 @@ public class Main
                     if (c.DistanceToObject <= playerWidth * 1.2)
                     {
                         collision[0] = true;
-                        return;
                     }
                 });                                
             }
@@ -308,21 +295,22 @@ public class Main
                 Collision();
         }                
 
+        @Override
         public void paint(Graphics g) 
         {
             int nrOfCircleObjects;
-
+        
             synchronized(circleObjects)
             {
                 nrOfCircleObjects = circleObjects.size();
             }
-
+        
             g.setColor(Color.BLACK);
             g.drawString("Speed (A = faster, S = slower): " + speed, 5, 12);
             g.drawString("Number of balls: " + nrOfCircleObjects, 230, 12);
             g.drawString("Survival time (s): " + survivalTimeSeconds, 370, 12);
             g.drawString("SCORE: " + score, 525, 12);
-            g.drawLine(0, 15, frameWidth, 15);     
+            g.drawLine(0, 15, FRAME_WIDTH, 15);     
 
             g.setColor(Color.BLUE);
             g.drawOval(xPlayer, yPlayer, playerWidth, playerHeight);                        
